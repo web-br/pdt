@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal da Transparência - Consulta CPF</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cor-principal: #003d7a;
+            --cor-secundaria: #0055bb;
+            --cor-verde: #00a84f;
+            --cor-destaque: #ff9800;
+            --cor-fundo: #f0f2f5;
+            --cor-texto: #2c3e50;
+            --cor-subtexto: #7f8c8d;
+            --cor-borda: #d5dce0;
+            --cor-sucesso: #27ae60;
+            --cor-erro: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--cor-principal) 0%, var(--cor-secundaria) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 61, 122, 0.15);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, var(--cor-principal) 0%, var(--cor-secundaria) 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -30%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+        }
+
+        .logo-container {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+
+        /* CONTEÚDO */
+        .content {
+            padding: 40px 30px;
+        }
+
+        /* SEÇÃO DE ENTRADA */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--cor-subtexto);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 14px;
+            border: 2px solid var(--cor-borda);
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+            letter-spacing: 2px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        input:focus {
+            border-color: var(--cor-principal);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 61, 122, 0.1);
+            transform: translateY(-2px);
+        }
+
+        input::placeholder {
+            color: #bdc3c7;
+        }
+
+        /* BOTÃO */
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--cor-principal) 0%, var(--cor-verde) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 61, 122, 0.25);
+            margin-bottom: 15px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 61, 122, 0.35);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            background: #bdc3c7;
+            cursor: wait;
+            transform: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* MENSAGEM DE ERRO */
+        .error {
+            color: white;
+            padding: 14px 16px;
+            background: linear-gradient(135deg, var(--cor-erro) 0%, #c62828 100%);
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+            margin-bottom: 20px;
+            animation: slideDown 0.3s ease;
+            border-left: 4px solid #a71f1f;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* RESULTADOS */
+        .result {
+            display: none;
+            animation: fadeInResult 0.4s ease-out;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        @keyframes fadeInResult {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f5 100%);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid var(--cor-borda);
+            border-left: 4px solid var(--cor-principal);
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 61, 122, 0.1);
+            border-left-color: var(--cor-verde);
+        }
+
+        .result-card.full {
+            grid-column: 1 / -1;
+        }
+
+        .result-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--cor-subtexto);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .result-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--cor-texto);
+            word-break: break-word;
+        }
+
+        /* SEÇÃO JSON */
+        .json-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--cor-borda);
+        }
+
+        .json-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--cor-subtexto);
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .json {
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            color: #d4d4d4;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', 'Courier', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.6;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid #404040;
+        }
+
+        .json::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .json::-webkit-scrollbar-track {
+            background: #2d2d2d;
+            border-radius: 3px;
+        }
+
+        .json::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 3px;
+        }
+
+        .json::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid var(--cor-borda);
+            font-size: 12px;
+            color: var(--cor-subtexto);
+        }
+
+        .footer a {
+            color: var(--cor-principal);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: var(--cor-verde);
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 12px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+
+            input,
+            button {
+                font-size: 15px;
+            }
+
+            .json {
+                font-size: 11px;
+            }
+        }
+
+        /* ÍCONES */
+        .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo-container">
+                <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" rx="10" fill="white" opacity="0.15"/>
+                    <text x="50" y="35" text-anchor="middle" fill="white" font-size="12" font-weight="bold">REPÚBLICA</text>
+                    <text x="50" y="50" text-anchor="middle" fill="#ff9800" font-size="9" font-weight="bold">FEDERATIVA</text>
+                    <text x="50" y="63" text-anchor="middle" fill="white" font-size="9">DO BRASIL</text>
+                    <rect x="20" y="70" width="60" height="2.5" fill="#ff9800"/>
+                    <rect x="25" y="76" width="50" height="1.5" fill="white" opacity="0.5"/>
+                </svg>
+            </div>
+            <h1>🔍 Transparência Brasil</h1>
+            <p>Consulte informações públicas de CPF</p>
+        </div>
+
+        <!-- CONTEÚDO -->
+        <div class="content">
+            <div class="input-group">
+                <label class="input-label">📋 Digite o CPF</label>
+                <input 
+                    type="text" 
+                    id="cpf" 
+                    placeholder="000.000.000-00" 
+                    maxlength="14"
+                    autocomplete="off"
+                >
+            </div>
+
+            <button id="btn" onclick="consultar()">🔍 Consultar</button>
+
+            <div id="error" class="error"></div>
+
+            <div id="result" class="result">
+                <div class="result-grid">
+                    <div class="result-card full">
+                        <div class="result-label">👤 Nome</div>
+                        <div class="result-value" id="rNome">-</div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">🆔 CPF</div>
+                        <div class="result-value" id="rCpf">-</div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">🏢 Relação</div>
+                        <div class="result-value" id="rRel">-</div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">🗺️ UF</div>
+                        <div class="result-value" id="rUf">-</div>
+                    </div>
+                </div>
+
+                <div class="json-section">
+                    <div class="json-title">📊 Dados Completos (JSON)</div>
+                    <div id="rJson" class="json"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            Dados fornecidos por <a href="https://www.transparencia.gov.br/" target="_blank">Portal da Transparência</a>
+        </div>
+    </div>
+
+    <script>
+        const cpf = document.getElementById('cpf');
+        const btn = document.getElementById('btn');
+        const error = document.getElementById('error');
+        const result = document.getElementById('result');
+
+        // Formatação automática do CPF
+        cpf.addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+            v = v.replace(/(\d{3})(\d)/, '$1.$2');
+            v = v.replace(/(\d{3})(\d)/, '$1.$2');
+            v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            e.target.value = v;
+        });
+
+        // Função para converter para Title Case
+        function toTitleCase(str) {
+            if (!str) return '-';
+            return str
+                .toLowerCase()
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+
+        // Função de consulta
+        async function consultar() {
+            const num = cpf.value.replace(/\D/g, '');
+            
+            if (num.length !== 11) {
+                error.textContent = '❌ CPF inválido - Digite 11 dígitos';
+                error.classList.add('show');
+                return;
+            }
+
+            error.classList.remove('show');
+            error.textContent = '';
+            btn.disabled = true;
+            btn.textContent = '⏳ CONSULTANDO...';
+            result.classList.remove('show');
+
+            try {
+                const res = await fetch(`https://api-web-br.vercel.app/api/pdt.js?cpf=${num}`);
+                const data = await res.json();
+
+                if (!data.NOME) {
+                    throw new Error('CPF não encontrado');
+                }
+
+                // Preenchimento dos dados com formatação
+                document.getElementById('rNome').textContent = 
+                    toTitleCase(data.NOME) || '-';
+                
+                document.getElementById('rCpf').textContent = 
+                    data.CPF || '-';
+                
+                document.getElementById('rRel').textContent = 
+                    data.RELACOES ? toTitleCase(data.RELACOES) : '-';
+                
+                document.getElementById('rUf').textContent = 
+                    (data.UF || '-').toUpperCase();
+
+                // JSON formatado
+                document.getElementById('rJson').textContent = 
+                    JSON.stringify(data, null, 2);
+
+                result.classList.add('show');
+                window.scrollTo({ top: document.querySelector('.result').offsetTop - 100, behavior: 'smooth' });
+
+            } catch (err) {
+                error.textContent = '❌ CPF não encontrado ou erro na consulta';
+                error.classList.add('show');
+            }
+
+            btn.disabled = false;
+            btn.textContent = '🔍 Consultar';
+        }
+
+        // Enter para consultar
+        cpf.addEventListener('keypress', e => {
+            if (e.key === 'Enter') consultar();
+        });
+    </script>
+
+    <!-- Watermark GitHub -->
+    <script>
+        (() => {
+            if (document.getElementById("webbr-watermark")) return;
+
+            const a = document.createElement("a");
+            a.id = "webbr-watermark";
+            a.href = "https://github.com/web-br";
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+
+            a.innerHTML = `
+                <style>
+                    @keyframes webbrFloat {
+                        0%,100% { transform: translateY(0); }
+                        50% { transform: translateY(-4px); }
+                    }
+
+                    @keyframes webbrGlow {
+                        0%,100% { box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+                        50% { box-shadow: 0 8px 24px rgba(255,255,255,.15); }
+                    }
+
+                    #webbr-watermark{
+                        position:fixed;
+                        right:16px;
+                        bottom:16px;
+                        display:flex;
+                        align-items:center;
+                        gap:7px;
+                        padding:8px 12px;
+                        border-radius:999px;
+                        text-decoration:none;
+                        background:rgba(0,61,122,.85);
+                        backdrop-filter:blur(10px);
+                        -webkit-backdrop-filter:blur(10px);
+                        border:1px solid rgba(255,255,255,.15);
+                        color:#fff;
+                        font:600 13px system-ui,sans-serif;
+                        z-index:2147483647;
+                        opacity:.85;
+                        animation:webbrFloat 3s ease-in-out infinite,
+                                  webbrGlow 3s ease-in-out infinite;
+                        transition:.25s;
+                    }
+
+                    #webbr-watermark:hover{
+                        opacity:1;
+                        transform:scale(1.08);
+                    }
+
+                    #webbr-watermark img.avatar{
+                        width:26px;
+                        height:26px;
+                        border-radius:50%;
+                    }
+
+                    #webbr-watermark img.github{
+                        width:16px;
+                        height:16px;
+                        filter:invert(1);
+                        opacity:.95;
+                    }
+                </style>
+
+                <img class="avatar" src="https://avatars.githubusercontent.com/u/286726470?v=4">
+                <span>@web-br</span>
+                <img class="github" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg">
+            `;
+
+            document.body.appendChild(a);
+        })();
+    </script>
+</body>
+</html>
